@@ -1,0 +1,15 @@
+# Binaries & build artifacts
+engine
+*.o
+
+# Downloaded files & archives
+alpine.tar.gz
+
+# Container rootfs filesystem (downloaded/extracted dynamically)
+rootfs/
+!rootfs/.gitkeep
+
+# Editor & OS files
+.DS_Store
+*.swp
+*.swo

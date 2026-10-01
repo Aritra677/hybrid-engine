@@ -1,0 +1,35 @@
+name: Build Engine
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y gcc make tar wget curl
+
+    - name: Download RootFS
+      run: |
+        mkdir -p rootfs
+        wget -qO alpine.tar.gz https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/alpine-minirootfs-3.20.3-x86_64.tar.gz
+        sudo tar -xf alpine.tar.gz -C rootfs/
+        rm alpine.tar.gz
+        echo "<h1>CI Pipeline Test</h1>" | sudo tee rootfs/index.html
+
+    - name: Build
+      run: make
+
+    - name: Test Execution
+      run: |
+        # Run the engine in the background
+        sudo ./engine &
+        sleep 2
+        curl -s http://localhost:8080 | grep "CI Pipeline Test"
+        sudo pkill engine
